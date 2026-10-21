@@ -1,11 +1,5 @@
-const fs = require("fs");
-const path = require("path")
+import chalk from "chalk"
 
-let finalPath = path.join(__dirname, "data", "message.txt")
+const msg = chalk.blue.bgRed.bold('Hello world!')
 
-// const data = fs.readFileSync(finalPath, "utf8");
-
-// console.log(data)
-
-let data = "Hello you are hacked"
-fs.writeFileSync(finalPath, data, 'utf8');
+console.log(msg)
