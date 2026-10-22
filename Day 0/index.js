@@ -6,7 +6,7 @@ async function getData(){
     const data = await fs.readFile("/Users/zayeemmohd/Desktop/newFile.txt", "utf8")
     console.log(data)
 }
-
+;
 getData()
 
 console.log("hello world")
