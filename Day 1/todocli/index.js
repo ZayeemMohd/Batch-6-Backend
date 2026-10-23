@@ -38,12 +38,31 @@ program
   .command("edit")
   .description("This command is used to edit existing todo")
   .argument("<existing_todo>", "This argument holds the new todo")
-//   .argument("<new_todo>", "This argument holds the new todo")
+  .argument("<new_todo>", "This argument holds the new todo")
   .action((existing_todo, new_todo) => {
-    todoArr.splice(existing_todo, 1,);
-    console.log(todoArr)
+
+    const indexOfTargetElement = todoArr.indexOf(existing_todo);
+
+    todoArr.splice(indexOfTargetElement, 1, new_todo);
+
     fs.writeFileSync(filePath, JSON.stringify(todoArr), "utf8");
-    console.log("Todo updated");
+
+    console.log("Todo Updated Successfully::", existing_todo, "->", new_todo);
+  });
+
+program
+  .command("delete")
+  .description("This command is used to delete existing todo")
+  .argument("<existing_todo>", "This argument holds the new todo")
+  .action((existing_todo) => {
+    
+   const targetTodoIndex =   todoArr.indexOf(existing_todo)
+
+   todoArr.splice(targetTodoIndex, 1)
+
+    fs.writeFileSync(filePath, JSON.stringify(todoArr), "utf8");
+
+    console.log("Todo Deleted Sucessfullly::", existing_todo);
   });
 
 program.parse();
