@@ -1,9 +1,13 @@
 import express from "express";
+import cors from "cors";
 import fs from "fs";
 import path from "path";
 
 const filePath = path.join(import.meta.dirname, "data", "todo.json");
 const app = express();
+
+// any frontend can request form browser
+app.use(cors());
 
 // json parser (parsing the json from request body (client))
 app.use(express.json());
