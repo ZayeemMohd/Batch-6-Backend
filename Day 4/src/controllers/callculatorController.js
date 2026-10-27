@@ -27,3 +27,6 @@ export const div = (req, res) => {
     div: result,
   });
 };
+
+
+
