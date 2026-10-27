@@ -1,42 +1,21 @@
 import express from "express";
+import rateLimitterMiddleware from "./src/middlewares/rateLimitterMiddleware";
+import reqCounterMiddleware from "./src/middlewares/reqCounterMiddleware";
+import { mul, sum } from "./src/controllers/callculatorController";
 
 const app = express();
-
 
 const limit = 5;
 let counter = 0;
 
+app.use(reqCounterMiddleware);
+app.use(rateLimitterMiddleware);
 
-const reqCounterMiddleware = (req, res, next)=>{
-    counter++;
-    console.log("New request recieved and counter increased to", counter)
-    next()
-}
+app.get("/sum/:a/:b", sum);
 
-// Rate limitter middleware
-const rateLimitterMiddleware = (req, res, next) => {
-    if(counter >= limit) {
-        res.json({
-            msg: "Rate limit exceeds..."
-        })
-    } else {
-        next();
-    }
-}
+app.get("/mul/:a/:b", mul);
 
-
-app.get("/sum/:a/:b", reqCounterMiddleware, rateLimitterMiddleware,  (req, res) => {
-  const { a, b } = req.params;
-  let result = parseInt(a) + parseInt(b);
-
-  res.json({
-    msg: "Sum request recieved at backend",
-    sum: result,
-  });
-});
-
-
-
+app.get("/div/:a/:b", div);
 
 app.listen("8080", () => {
   console.log("Server is listening on PORT: 8080");
