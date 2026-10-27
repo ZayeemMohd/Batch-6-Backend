@@ -1,12 +1,11 @@
 import express from "express";
-import rateLimitterMiddleware from "./src/middlewares/rateLimitterMiddleware";
-import reqCounterMiddleware from "./src/middlewares/reqCounterMiddleware";
-import { mul, sum } from "./src/controllers/callculatorController";
+import rateLimitterMiddleware from "./src/middlewares/rateLimitterMiddleware.js";
+import reqCounterMiddleware from "./src/middlewares/reqCounterMiddleware.js";
+import { div, mul, sum } from "./src/controllers/callculatorController.js";
 
 const app = express();
 
-const limit = 5;
-let counter = 0;
+
 
 app.use(reqCounterMiddleware);
 app.use(rateLimitterMiddleware);
