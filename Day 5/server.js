@@ -85,6 +85,8 @@ const generateToken = () => {
 const authMiddleware = (req, res, next) => {
   const userToken = req.headers["token"];
 
+
+  // db call for token verification 
   const verifiedUser = usersArr.find((userObj) => {
     if (userToken === userObj.token) {
       return true;
