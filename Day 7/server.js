@@ -1,5 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 import dotenv from "dotenv";
 import { UserModel } from "./utils/db.js";
@@ -29,7 +30,35 @@ app.post("/signup", async (req, res) => {
   });
 });
 
-app.post("/signin", (req, res) => {});
+app.post("/signin", async (req, res) => {
+  const { username, password } = req.body;
+
+  const foundUser = await UserModel.findOne({
+    username: username,
+    password: password,
+  });
+
+  if (foundUser == null) {
+    res.status(301).json({
+      msg: "invalid username or password",
+    });
+  }
+
+  const token = jwt.sign(
+    {
+      username: foundUser.username,
+    },
+    process.env.JWT_SECRET,
+  );
+
+  res.json({
+    msg: "login successfully...",
+    token,
+  });
+});
+
+
+
 
 const port = 8080;
 app.listen(port, () => {
