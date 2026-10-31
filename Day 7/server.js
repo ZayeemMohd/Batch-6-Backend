@@ -3,8 +3,24 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 
 import dotenv from "dotenv";
-import { UserModel } from "./utils/db.js";
+import { TodoModel, UserModel } from "./utils/db.js";
 dotenv.config();
+
+const authMiddleware = (req, res, next) => {
+  const token = req.headers["token"];
+
+  const payload = jwt.verify(token, process.env.JWT_SECRET);
+
+  if (!payload) {
+    res.json({
+      msg: "invalid token...!",
+    });
+  }
+
+  // creating a new key-property pair in object
+  req.userId = payload.userId;
+  next();
+};
 
 mongoose
   .connect(process.env.DB_URL)
@@ -46,7 +62,7 @@ app.post("/signin", async (req, res) => {
 
   const token = jwt.sign(
     {
-      username: foundUser.username,
+      userId: foundUser._id,
     },
     process.env.JWT_SECRET,
   );
@@ -57,8 +73,39 @@ app.post("/signin", async (req, res) => {
   });
 });
 
+// TODO
 
+app.use(authMiddleware);
 
+app.get("/todo",async  (req, res) => {
+  const userId = req.userId;
+
+  const data = await TodoModel.find({
+    userId
+  })
+
+  res.json({
+    msg: "todo fetched successfully",
+    data
+  })
+
+});
+
+app.post("/todo", async (req, res) => {
+  const { todo_name, isDone } = req.body;
+  let userId = req.userId;
+
+  let feedback = await TodoModel.create({ userId, todo_name, isDone });
+
+  res.json({
+    msg: "todo added successfully...",
+    feedback,
+  });
+});
+
+app.put("/todo", (req, res) => {});
+
+app.delete("/todo", (req, res) => {});
 
 const port = 8080;
 app.listen(port, () => {
