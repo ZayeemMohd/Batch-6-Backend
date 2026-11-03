@@ -4,6 +4,21 @@ import mongoose from "mongoose";
 import { todoModel, userModel } from "./utils/db.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { z } from "zod";
+
+const signupBodySchema = z.object({
+  email: z.string().min(3).max(20),
+  username: z
+    .string()
+    .min(1)
+    .max(10)
+    .regex(/^(?!.*\s)(?=.*[A-Z]).*$/),
+  password: z
+    .string()
+    .min(6)
+    .max(10)
+    .regex(/^(?!.*\s)(?=.*[A-Z]).*$/),
+});
 
 dotenv.config();
 
@@ -43,16 +58,26 @@ const app = express();
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
+  const result = signupBodySchema.safeParse(req.body);
+
+  if (!result.success) {
+    res.json({
+      msg: "invalid format of data",
+      error: result.error.message,
+    });
+  }
+
   const { username, email, password } = req.body;
 
-  const alreadyExistsUser = userModel.findOne({
+  const alreadyExistsUser = userModel.find({
     username: username,
   });
 
-  if (alreadyExistsUser) {
+  if (alreadyExistsUser !== null) {
     res.json({
       msg: "username already exists...!",
     });
+    return;
   }
 
   const hashedPassword = await bcrypt.hash(password, 5);
@@ -76,10 +101,10 @@ app.post("/signin", async (req, res) => {
     username,
   });
 
-  if(foundUser == null){
+  if (foundUser == null) {
     res.json({
-        msg: 'user not found..!'
-    })
+      msg: "user not found..!",
+    });
   }
 
   const passwordMatch = await bcrypt.compare(password, foundUser.password);
