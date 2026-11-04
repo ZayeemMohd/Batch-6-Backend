@@ -132,6 +132,21 @@ app.post("/signin", async (req, res) => {
 
 app.use(authMiddleware);
 
+app.get("/me", async (req, res) => {
+  const user = await userModel.findById(req.userId).select("-password");
+
+  if (user === null) {
+    res.status(404).json({
+      msg: "user not found",
+    });
+    return;
+  }
+
+  res.json({
+    data: user,
+  });
+});
+
 app.get("/todo", async (req, res) => {
   const userId = req.userId;
 
